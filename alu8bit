@@ -1,0 +1,14 @@
+module PRACTICE(x,y,z,carry,sign,zero,parity,overflow);
+       input [15:0]x,y;
+		 output [15:0]z;
+		 output sign,carry,zero,parity,overflow;
+		 
+		 assign {carry,sum}= x+y;
+		 assign sign = z[3];
+		 assign zero = ~|z;
+		 assign parity = ~^z;
+		 assign overflow = (x[15]& y[15]&~z[15])|(~x[15]&~y[15]&z[15]);
+		 
+		 endmodule
+		 
+		 
