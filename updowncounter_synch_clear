@@ -1,0 +1,19 @@
+module PRACTICE(clk,din,load,clear,mode,count);
+
+       input clk,load,clear,mode;
+		 input [3:0]din;
+		 output reg [3:0]count;
+		 
+		 
+		 
+		 always @(posedge clk)
+		  if(load) count<=din;
+		  else if (clear) count<=4'b0;
+		  else if(mode) count<=count+1;
+		  else count<=count-1;
+		 end
+endmodule
+
+		 
+		 
+		 
