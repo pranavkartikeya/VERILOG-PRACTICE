@@ -1,0 +1,19 @@
+module PRACTICE(clk,count,reset);
+       
+		 input clk,reset;
+		 output reg [3:0]count;
+		 
+		 
+		 
+		 always @(posedge clk , negedge reset)
+		        begin
+				  if(reset==0) count<=0;
+				  else  count<=count+1 ;
+				  end
+		 endmodule
+		 
+		 
+       
+		
+		 
+		 
