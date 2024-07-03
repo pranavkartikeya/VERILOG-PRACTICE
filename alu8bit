@@ -1,4 +1,4 @@
-module PRACTICE(x,y,z,carry,sign,zero,parity,overflow);
+module alu8bit(x,y,z,carry,sign,zero,parity,overflow);
        input [15:0]x,y;
 		 output [15:0]z;
 		 output sign,carry,zero,parity,overflow;
