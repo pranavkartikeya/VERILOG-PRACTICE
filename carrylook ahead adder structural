@@ -1,0 +1,28 @@
+module PRACTICE(x,y,cin,z,cout);
+       
+		 input [4:0]x,y;
+		 output [4:0]z;
+		 input cin;
+		 output cout;
+		 wire c0,c1,c2;
+		 wire g0,g1,g2,g3,p0,p1,p2,p3;
+		 
+		 assign go=x[0]&y[0],g1=x[1]&y[1],
+		        g2=x[2]&y[2],g3=x[3]&y[3];
+				  
+		 assign p0=x[0]^y[0],p1=x[1]^y[1],
+		        p2=x[2]^y[2],p3=x[3]^y[3];
+				  
+		 assign c0 = go|(p0&cin),c1 = g1|(p1&go)|(p1&p0&cin),
+		        c2 = g2|(p2&g1)|(p2&p1&go)|(p2&p1&p0&cin),
+				  cout = g3|(p3&g2)|(p3&p2&g1)|(p3&p2&p1&go)|(p3&p2&p1&p0&cin);
+				  
+		assign z[0]=p0^cin,z[1]=p1^c1,
+		       z[2]=p2^c2,z[3]=p3^cout;
+				 
+		     
+		         
+		 
+		 endmodule
+		 
+		 
