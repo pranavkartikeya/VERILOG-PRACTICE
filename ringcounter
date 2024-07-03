@@ -1,0 +1,23 @@
+module PRACTICE(clk,inen,count);
+
+       input clk;
+		 input inen;
+		 output reg [3:0]count;
+		 
+		 
+		 
+		 always @(posedge clk)
+		  begin
+		  if(inen) count<= 4'b1000;
+		   else 
+			begin
+			count<= count<<1;
+			count[0]<=count[3];
+			end
+				
+		 end
+endmodule
+
+		 
+		 
+		 
