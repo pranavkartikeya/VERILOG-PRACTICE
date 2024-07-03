@@ -1,0 +1,89 @@
+module full_adder_structural (
+    input a, 
+    input b, 
+    input cin, 
+    output sum, 
+    output cout
+);
+
+    wire axorb, and1, and2;
+
+    // XOR gate for sum
+    xor G1 (axorb, a, b);
+    xor G2 (sum, axorb, cin);
+
+    // AND gates for carry out
+    and G3 (and1, a, b);
+    and G4 (and2, axorb, cin);
+
+    // OR gate for final carry out
+    or  G5 (cout, and1, and2);
+
+endmodule
+
+module full_adder_tb;
+
+    // Inputs
+    reg a;
+    reg b;
+    reg cin;
+
+    // Outputs
+    wire sum_behav;
+    wire cout_behav;
+    wire sum_struct;
+    wire cout_struct;
+
+    // Instantiate the behavioral model
+    full_adder_behavioral FA_behav (
+        .a(a), 
+        .b(b), 
+        .cin(cin), 
+        .sum(sum_behav), 
+        .cout(cout_behav)
+    );
+
+    // Instantiate the structural model
+    full_adder_structural FA_struct (
+        .a(a), 
+        .b(b), 
+        .cin(cin), 
+        .sum(sum_struct), 
+        .cout(cout_struct)
+    );
+
+    // Test vector generation
+    initial begin
+        // Test case 1
+        a = 0; b = 0; cin = 0;
+        #10;
+        // Test case 2
+        a = 0; b = 0; cin = 1;
+        #10;
+        // Test case 3
+        a = 0; b = 1; cin = 0;
+        #10;
+        // Test case 4
+        a = 0; b = 1; cin = 1;
+        #10;
+        // Test case 5
+        a = 1; b = 0; cin = 0;
+        #10;
+        // Test case 6
+        a = 1; b = 0; cin = 1;
+        #10;
+        // Test case 7
+        a = 1; b = 1; cin = 0;
+        #10;
+        // Test case 8
+        a = 1; b = 1; cin = 1;
+        #10;
+    end
+
+    // Monitor the outputs
+    initial begin
+        $monitor("At time %t, a = %b, b = %b, cin = %b, sum_behav = %b, cout_behav = %b, sum_struct = %b, cout_struct = %b", 
+                 $time, a, b, cin, sum_behav, cout_behav, sum_struct, cout_struct);
+    end
+
+endmodule
