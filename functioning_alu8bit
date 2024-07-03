@@ -1,0 +1,27 @@
+module PRACTICE(in0,in1,op,out);
+       
+		 input [7:0]in0,in1;
+		 input [1:0]op;
+		 output reg [15:0]out;
+		 
+		 parameter add=2'b00,sub=2'b01,mul=2'b10,div=2'b11;
+		 
+		 
+		 always @(*)
+		        begin
+				 case(op)
+				 add : out<= in0 +in1;
+				 sub : out<= in0 -in1;
+				 mul : out<= in0 *in1;
+				 div : out<= in0 /in1;
+				 default: out<=0;
+				 endcase
+				 end
+				 
+		 endmodule
+		 
+		 
+       
+		
+		 
+		 
