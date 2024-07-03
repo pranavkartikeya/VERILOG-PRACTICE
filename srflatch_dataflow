@@ -1,0 +1,15 @@
+module PRACTICE(s,r,q,qbar);
+       
+		 input s,r;
+		 output q,qbar;
+		 
+		 assign q = ~(r&qbar),
+		        qbar = ~(s&q);
+		 
+		 endmodule
+		 
+		 
+       
+		
+		 
+		 
