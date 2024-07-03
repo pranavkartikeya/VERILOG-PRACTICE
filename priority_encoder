@@ -1,4 +1,4 @@
-module priorityencoder(in,out);
+module priorityencoder(in,out);//blocking statements are used so inputs are checked one by one and in[0] is given highest priority
 
 input [7:0]in;
 output reg [2:0]out;
