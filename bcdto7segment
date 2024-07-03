@@ -1,4 +1,4 @@
-module bcdto7segment(bcd,seg);
+module bcdto7segment(bcd,seg); // here also blocking statements were used 
 
    input [3:0]bcd;
    output reg  [6:0]seg;
