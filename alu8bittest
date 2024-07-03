@@ -1,0 +1,16 @@
+module alutest;
+       reg [15:0]x,y;
+       wire [15:0]z;
+		 wire sign,carry,zero,parity,overflow;
+		 
+		 PRACTICE    p1(x,y,z,carry,sign,zero,parity,overflow);
+		 
+		 initial 
+		    begin
+		    $monitor($time,"x=%h,y=%h,z=%h,sign=%b,carry=%b,zero=%b,parity=%b,overflow=%b",x,y,z,carry,sign,zero,parity,overflow);
+			 #5 x=16'h8fff;y=16'h8000;
+			 #5 $finish;
+			 end
+		  endmodule 
+			 
+			 
