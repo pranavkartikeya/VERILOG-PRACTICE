@@ -1,0 +1,32 @@
+module PRACTICE(x,y,z,carry,sign,zero,parity,overflow);
+       
+		 input [15:0]x,y;
+		 output [15:0]z;
+		 output sign,carry,zero,parity,overflow;
+		  wire c1,c2,c3;
+		  
+		  
+		 practice2  p5(x[3:0],y[3:0],1'b0,z[3:0],c1);
+		 practice2  p2(x[7:4],y[7:4],c1,z[7:4],c2);
+		 practice2  p3(x[11:8],y[11:8],c2,z[11:8],c3);
+		 practice2  p4(x[15:12],y[15:12],c3,z[15:12],carry);
+		 
+		 assign sign = z[3];
+		 assign zero = ~|z;
+		 assign parity = ~^z;
+		 assign overflow = (x[15]& y[15]&~z[15])|(~x[15]&~y[15]&z[15]);
+		 
+		 endmodule
+
+module practice2(x,y,cin,sum,cout);
+       
+		 input [4:0]x,y;
+		 input cin;
+		 output [4:0]sum;
+		 output cout;
+		 
+		 assign {cout,sum}=x+y+cin;
+		 
+		 endmodule
+		 
+		 
