@@ -1,0 +1,27 @@
+module addertest;
+       reg x,y,cin;
+		 wire carry,z;
+		 integer i;
+		 
+		 PRACTICE  p1(x,y,cin,carry,z);
+		 
+		 initial 
+		 begin
+		 $dumpfile("adder.vcd");
+		 $dumpvars(0,practicetest);
+
+		 
+		 for(i=0;i<8;i=i+1)
+		     begin
+			  {x,y,cin}=i;
+			  #5;// do not forget to gibve the delay 
+			  $display("T=%d,x=%b,y=%b,cin=%b,carry=%b,z=%b",$time,x,y,cin,carry,z);
+			  end
+			  
+		#5 $finish;
+		end
+		endmodule
+			  
+			  
+		 
+		 
