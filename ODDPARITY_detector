@@ -1,0 +1,57 @@
+module PRACTICE(in,parity,clk);//Odd parity
+
+       input clk,in;
+		 output reg parity;
+		 reg even_odd;
+		 
+		 parameter even=1'b1,odd=1'b0;
+		 
+		 always @(posedge clk)
+		        begin
+				  case(even_odd)
+				  
+				  even : even_odd <= in? odd:even;
+				  odd :  even_odd <= in? even:odd;
+				  default : even_odd <= even;
+					endcase
+			      end
+		 always @(even_odd)
+		        begin
+				  case(even_odd)
+				  
+				  even : parity <=0;
+				  odd :  parity <=1;
+					endcase
+			      end
+		
+			endmodule
+			
+			
+//test_bench
+module practicetest;
+       reg in,clk;
+		 wire parity;
+		 
+		 PRACTICE p1(in,parity,clk);
+		 
+		 always #5 clk =~clk;
+		 
+		 initial
+		 begin
+		 
+		 clk=1'b0;
+		 #2 in=1'b1;
+		 #7 in=1'b0;
+		 #12 in=1'b1;
+		 #100 $finish;
+		 
+		 end
+		 
+		 initial
+		   begin
+			$monitor($time,"in=%b,parity=%b",in,parity);
+			end
+			
+endmodule
+		 
+		 
