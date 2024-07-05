@@ -1,0 +1,117 @@
+module datapath(lda,ldb,ldp,clrp,decb,equz,datain,clk);
+
+       input lda,ldb,ldp,clrp,decb,clk;
+       input [15:0]datain;
+       output equz;
+		 wire [15:0] X,Y,Z,BOUT;
+
+    PIPO1 A(X,lda,datain,clk);
+    PIPO2 P(Y,clrp,ldp,Z,clk);
+    ADDER AD(Z,X,Y);
+    DOWNCOUNTER B(BOUT,datain,ldb,decb,clk);
+    COMP C(equz,BOUT);
+
+endmodule
+
+module PIPO1(X,lda,bus,clk);
+       input [15:0]bus;
+		 input  lda,clk;
+		 output reg [15:0]X;
+		 
+		 always @(posedge clk)
+		         if(lda) X<=bus;
+endmodule
+
+module PIPO2 (Y,clrp,ldp,Z,clk);
+       input [15:0]Z;
+		 input  ldp,clrp,clk;
+		 output reg [15:0]Y;
+		 
+		 always @(posedge clk)
+		         if(clrp) Y<=16'b0;
+					else if(ldp) Y<=Z;
+					
+endmodule
+
+module ADDER(Z,X,Y);
+       input [15:0]X,Y;
+		 output reg[15:0]Z;
+		 always @(*)
+		 Z=X+Y;
+endmodule
+
+
+module DOWNCOUNTER (BOUT,BUS,ldb,decb,clk);
+       input [15:0]BUS;
+		 input ldb,decb,clk;
+		 output reg [15:0]BOUT;
+		 always @(posedge clk)
+		        if(ldb) BOUT<=BUS;
+				  else if(decb) BOUT<=BOUT -1;
+endmodule
+
+module COMP(equz,BOUT);
+       input [15:0]BOUT;
+		 output equz;
+		 
+		 assign equz=(BOUT==0);
+endmodule
+
+
+
+module controlpath(lda,ldb,ldp,clrp,decb,equz,start,done,clk);
+       input clk,equz,start;
+		 output reg  lda,ldb,ldp,clrp,decb,done;
+		 reg [2:0]state;
+		 parameter S0=4'b000,S1=4'b001,S2=4'b010,S3=4'b011,S4=4'b100;
+		 always @(posedge clk)
+		       case(state)
+					 S0: if(start) state<=S1;
+					 S1: state <=S2;
+					 S2: state <=S3;
+					 S3: #2 if(equz) state<=S4;
+					 S4: state<=S4;
+					 default: state<=S0;
+				 endcase
+		always @(state)
+		       begin
+		       case(state)
+				      S0: begin #1 lda=0;ldb=0;ldp=0;clrp=0;decb=0;end
+						S1: begin #1 lda=1; end
+						S2: begin #1 lda=0;ldb=1;clrp=1; end
+						S3: begin #1 ldb=0;ldp=1;clrp=0;decb=1; end
+						S4: begin #1 done=1; ldb=0;ldp=0;decb=0; end
+						default : begin #1 lda=0;ldb=0;ldp=0;clrp=0;decb=0;end
+				 endcase
+				end
+				endmodule
+
+module multest();
+       reg [15:0]datain;
+		 reg clk,start;
+		 wire done;
+		 
+		 
+		 datapath db(lda,ldb,ldp,clrp,decb,equz,datain,clk);
+		 controlpath c(lda,ldb,ldp,clrp,decb,equz,start,done,clk);
+		 
+		 initial
+		      begin
+				     clk=1'b0;
+					  #3 start =1'b1;
+					  #500  $finish;
+				end
+	     always #5 clk =~clk;
+		  
+		  initial
+		        begin
+				     #19 datain=17;
+					  #10 datain=5;
+					end
+			initial 
+			    begin
+				    $monitor($time,"%d %b",db.Y,done);
+					 end
+endmodule
+				
+
