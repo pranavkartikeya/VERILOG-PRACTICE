@@ -1,0 +1,53 @@
+module PIPELINE_EXAMPLE1(A,B,C,D,F,clk);
+       input [9:0]A,B,C,D;
+		 input clk;
+		 output  [9:0]F;
+		 reg [9:0]L12_x1,L12_x2,L12_D,L23_x3,L23_D,L34_F;
+		 
+		 assign F = L34_F;
+		 
+		 always @(posedge clk)   //stage1
+		        begin
+				  L12_x1 <= #4 A+B;
+				  L12_x2 <= #4 C-D;
+				  L12_D  <= D;
+				  end
+		 always @(posedge clk)   //stage2
+		        begin
+		
+				  L23_x3 <= #4  L12_x1 +  L12_x2;
+				  L23_D <= L12_D;
+				  end
+				  
+			always @(posedge clk)   //stage3
+		        begin
+				  L34_F <= #6 L23_x3*L23_D;
+				  end
+endmodule
+
+
+
+module testpipeline;
+       reg [9:0]A,B,C,D;
+		 reg clk;
+		 wire [9:0]F;
+		 
+		 PIPELINE_EXAMPLE1 P(A,B,C,D,F,clk);
+		 
+		 initial clk=1'b0;
+		 
+		 always #10 clk =~clk;
+		 
+		 initial
+		    begin
+			     #5 A=10;B=12;C=6;D=3; 
+				  #20 A=10;B=12;C=5;D=3;
+				 end
+				
+		initial
+	         begin
+			 $monitor($time,"F=%d",F);
+			#300 $finish;
+		end
+	endmodule
+	
