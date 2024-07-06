@@ -1,0 +1,23 @@
+module REGISTERBANK32x32(rddata1,rddata2,wrdata,sr1,sr2,dr,write,reset,clk);
+       input write,clk,reset;
+		 input [4:0]sr1,sr2,dr;
+		 output [31:0]rddata1,rddata2;
+		 input [31:0]wrdata;
+		 reg [31:0]regfile[31:0];
+		 integer k;
+		 
+		 assign rddata1 = regfile[sr1];
+		 assign rddata2 = regfile[sr2];
+		 
+		 always @(posedge clk)
+		        begin
+				  if(reset) begin 
+				            for(k=0;k<32;k=k+1) regfile[k]<=0;
+								end
+								     
+		        else begin
+				       if(write) regfile[dr]<=wrdata;
+				       end
+						 end
+						 
+endmodule
