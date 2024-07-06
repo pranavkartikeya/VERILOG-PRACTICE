@@ -1,0 +1,18 @@
+module Singleport_RAM1(addr,rd,wr,cs);          
+       input [9:0] addr;
+		 wire [7:0] data_in,data_out;
+		 input rd,wr,cs;
+		 reg [7:0]mem[0:1023];
+		 tri [7:0]bus;
+	 		 
+		 assign data_out=mem[addr];
+		 assign bus=rd? data_out:8'hz;
+		 assign data_in=wr?bus :8'hz;
+		 
+		 
+		 always @(addr,data_in,wr,cs)
+		        if (cs && wr) mem[addr]=data_in;
+		
+endmodule
+
+				  
