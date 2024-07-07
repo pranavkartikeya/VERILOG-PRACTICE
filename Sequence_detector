@@ -1,4 +1,4 @@
-module PRACTICE(in,clk,reset,out);
+module PRACTICE(in,clk,reset,out);//detect 0110 sequence
        input in,clk,reset;
 		 output reg out;
 		 reg [1:0]PS,NS;
