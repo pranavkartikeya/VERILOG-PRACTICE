@@ -9,26 +9,22 @@ module PRACTICE(in,clk,reset,out);//detect 0110 sequence
 		 
 		 always @(PS,in)
 		        case(PS)
-				         s0: 
-							begin
-						   NS <= in ? s0 : s1;
-							out <= 0;
-							end
-							s1: 
-							begin
-						   NS <= in ? s2 : s1;
-							out <= 0;
-							end
-                     s2:
-							begin
+				         s0: begin
+						NS <= in ? s0 : s1;
+						out <= 0;
+						end
+					  s1: begin
+						 NS <= in ? s2 : s1;
+						 out <= 0;
+						 end
+                                         s2:  begin
 						   NS <= in ? s3 : s1;
-							out <= 0;
-							end
-							s3: 
-							begin
+						   out <= 0;
+						   end
+					 s3:   begin
 						   NS <= in ? s0 : s1;
-							out <=in ? 0:1;
-							end
+						    out <=in ? 0:1;
+						    end
 							
 				endcase
 endmodule
