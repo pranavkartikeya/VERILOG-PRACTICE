@@ -1,0 +1,54 @@
+module alu(in1,in2,op,out,sign,carry,zero,parity,overflow);
+       input [3:0]in1,in2;
+       input [2:0] op;
+       parameter  ADD=3'b000,SUB=3'b001,DIV=3'b010,AND=3'b011,OR=3'b100;
+       output  sign,zero,parity,overflow;
+       output reg carry;
+       output reg [3:0]out;
+
+       always @(*)
+         begin
+            carry=0;
+             case (op)
+             ADD :  {carry,out} <= in1 + in2 ;
+             SUB :  out <=  in1 - in2 ; 
+             DIV :  out <=  in1 / in2 ; 
+             AND :  out <=  in1 & in2 ;
+             OR  :  out <=  in1 | in2 ;  
+             default : out=0 ;
+             endcase
+        end
+        
+        assign sign = out[3];
+        assign zero = ~(|out);
+        assign parity =~(^out);
+        assign overflow = (in1[3]&in2[3]&~out[3])|(~in1[3]&~in2[3]&out[3]);
+    endmodule
+
+`include "alu.v"
+
+module alu_test();
+      reg [3:0]in1,in2;
+      reg  [2:0] op;
+      wire [3:0]out;
+      wire sign,carry,zero,parity,overflow;
+
+      alu p(in1,in2,op,out,sign,carry,zero,parity,overflow);
+
+      initial
+         begin
+            in1=4;in2=5;op=3'b011;
+            #30;
+
+            $monitor($time,"in1=%d in2=%d,out=%d,sign=%d",in1,in2,out,sign);
+
+        end
+endmodule
+
+
+		
+
+    
+    
+         
+
