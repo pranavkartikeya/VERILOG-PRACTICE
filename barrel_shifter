@@ -1,0 +1,42 @@
+module barrel_shifter(k,IN,OUT);
+input [1:0]k;
+input  [3:0]IN;
+output reg [3:0]OUT;
+
+always @(*)
+    begin
+    case(k)
+    2'b00 : OUT <= IN;
+    2'b01 : OUT <= {IN[0],IN[3:2]};
+    2'b10 : OUT <= {IN[1],IN[0],IN[3:2]};
+    2'b11 : OUT <= {IN[2:1],IN[0],IN[3]};
+    endcase
+    end
+
+
+endmodule
+
+`include "barrel_shifter.v"
+
+module barrel_shifter_tb();
+reg [1:0]k;
+reg [3:0]IN;
+wire [3:0]OUT;
+
+barrel_shifter p(k,IN,OUT);
+
+initial
+begin
+   k=2'b00;IN=4'b0011;
+#5 k=2'b01;IN=4'b0011;
+#5 k=2'b10;IN=4'b0011;
+#5 k=2'b11;IN=4'b0011;
+
+end
+initial
+begin
+$monitor($time,"OUT=%b",OUT);
+end
+
+endmodule
+
