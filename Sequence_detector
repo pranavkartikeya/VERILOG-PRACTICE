@@ -28,6 +28,50 @@ module PRACTICE(in,clk,reset,out);//detect 0110 sequence
 							
 				endcase
 endmodule
+`include "PRACTICE.v"
+
+module practice_test();
+  reg in, clk, reset;
+  wire out;
+
+  // Instantiate the PRACTICE module
+  PRACTICE uut (.in(in), .clk(clk), .reset(reset), .out(out));
+
+  // Initialize the clock
+  initial begin
+    clk = 1'b0;
+  end
+
+  // Generate a clock with a period of 10 time units
+  always #5 clk = ~clk;
+
+  // Stimulus block to apply test input sequence
+  initial begin
+    reset = 1; // Start with reset active
+    #10 reset = 0; // Release reset after 10 time units
+
+    // Apply the input sequence "0110" and other test patterns
+    #2 in = 0;
+    #10 in = 1;
+    #10 in = 1;
+    #10 in = 0; // This completes the sequence "0110", out should go high
+
+    #10 in = 1; // Test a new pattern starting with 1
+    #10 in = 0;
+    #10 in = 1;
+    #10 in = 1;
+
+    #10 $finish; // End simulation
+  end
+
+  // Monitor the signals for verification
+  initial begin
+    $monitor("Time: %0t | clk = %b | reset = %b | in = %b | PS = %b | out = %b", 
+              $time, clk, reset, in, uut.PS, out);
+  end
+
+endmodule
+
 
 						
 						
