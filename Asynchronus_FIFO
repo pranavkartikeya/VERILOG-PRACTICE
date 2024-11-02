@@ -1,0 +1,159 @@
+//3 bit addrbus but for asynchronus fifo we use oine bit extra 
+
+module asynch_FIFO(datain,rd_clk,wr_clk,wren,rden,wrrst,rdrst,dataout,full,empty);
+parameter fifo_depth = 8;
+parameter data_width = 8;
+parameter addr=4;
+input [7:0]datain;
+output reg[7:0]dataout;
+input rd_clk,wr_clk,wren,rden,wrrst,rdrst;
+output full,empty;
+
+reg wr_en,rd_en;
+reg [data_width-1:0] mem[fifo_depth-1:0];
+reg [addr-1:0]wr_ptr,rd_ptr,wr_ptr_g_s1,wr_ptr_g_s2,rd_ptr_g_s1,rd_ptr_g_s2;
+wire [addr-1:0]wr_ptr_g,rd_ptr_g;
+
+
+//writing data into fifo
+always@(posedge wr_clk)
+       begin
+       if(wrrst) wr_ptr <=0;
+       else begin
+       if(wren && !full) begin
+       wr_ptr <=wr_ptr +1;
+       mem[wr_ptr]<=datain;
+       end
+       end
+       end
+
+// reading data from fifo
+
+always@(posedge rd_clk)
+       begin
+       if(rdrst) rd_ptr <=0;
+       else begin
+       if(rden && !empty) begin
+       rd_ptr <=rd_ptr +1;
+       dataout<=mem[rd_ptr];
+       end
+       end
+       end
+
+assign wr_ptr_g = wr_ptr^(wr_ptr>>1);
+assign rd_ptr_g = rd_ptr^(rd_ptr>>1);
+
+// 2 tage synchronizer wr_ptr wrt readpointer
+    always@(posedge rd_clk)
+       begin
+       if(rdrst) begin  wr_ptr_g_s2 <=0 ; wr_ptr_g_s1 <=0; end
+       else begin
+       wr_ptr_g_s1 <= wr_ptr_g;
+       wr_ptr_g_s2 <= wr_ptr_g_s1;
+       end
+       end
+
+always@(posedge wr_clk)
+       begin
+       if(wrrst) begin  rd_ptr_g_s2 <=0 ; rd_ptr_g_s1 <=0; end
+       else begin
+       rd_ptr_g_s1 <= rd_ptr_g;
+       rd_ptr_g_s2 <= rd_ptr_g_s1;
+       end
+       end
+
+assign empty = (rd_ptr_g==wr_ptr_g_s2);
+
+assign full = (wr_ptr_g[addr-1] != rd_ptr_g_s2[addr-1])
+           && (wr_ptr_g[addr-2] != rd_ptr_g_s2[addr-2])
+           && (wr_ptr_g[addr-3:0] == rd_ptr_g_s2[addr-3:0]);
+
+
+endmodule
+
+`include "asynch_FIFO.v"
+
+module asynch_FIFO_tb();
+
+    parameter fifo_depth = 8;
+    parameter data_width = 8;
+    parameter addr = 4;
+
+    // Testbench signals
+    reg [data_width-1:0] datain;
+    reg rd_clk, wr_clk, wren, rden, wrrst, rdrst;
+    wire [data_width-1:0] dataout;
+    wire full, empty;
+
+    // Instantiate the FIFO
+    asynch_FIFO #(fifo_depth, data_width, addr) fifo (
+        .datain(datain),
+        .rd_clk(rd_clk),
+        .wr_clk(wr_clk),
+        .wren(wren),
+        .rden(rden),
+        .wrrst(wrrst),
+        .rdrst(rdrst),
+        .dataout(dataout),
+        .full(full),
+        .empty(empty)
+    );
+
+    // Clock Generation
+    initial begin
+        rd_clk = 0;
+        wr_clk = 0;
+    end
+
+    always #5 wr_clk = ~wr_clk; // Write clock with a 10 ns period
+    always #7 rd_clk = ~rd_clk; // Read clock with a 14 ns period
+
+    // Test sequence
+    initial begin
+        // Initialize
+        datain = 8'h00;
+        wren = 0;
+        rden = 0;
+        wrrst = 1;
+        rdrst = 1;
+
+        // Reset the FIFO
+        #10;
+        wrrst = 0;
+        rdrst = 0;
+
+        // Write data into FIFO
+        @(posedge wr_clk);
+        wren = 1;
+        for (integer i = 0; i < fifo_depth; i = i + 1) begin
+            datain = i + 8'hA0; // Example data pattern
+            @(posedge wr_clk);
+        end
+        wren = 0; // Stop writing
+
+        // Check if FIFO is full
+        if (full) $display("FIFO is full as expected.");
+
+        // Read data from FIFO
+        @(posedge rd_clk);
+        rden = 1;
+        for (integer j = 0; j < fifo_depth; j = j + 1) begin
+            @(posedge rd_clk);
+            $display("Read data: %h", dataout);
+        end
+        rden = 0; // Stop reading
+
+        // Check if FIFO is empty
+        if (empty) $display("FIFO is empty as expected.");
+
+        // End simulation
+        #20;
+        $stop;
+    end
+endmodule
+
+
+
+
+
+
